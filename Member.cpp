@@ -1,7 +1,5 @@
 #include "Member.h"
 
-#include <utility>
-
 Member::Member(string username,string password, string fullName, 
         string phoneNumber, int creditPoints, string address, string city, string description)
 {
@@ -24,17 +22,6 @@ void Member::displayInformation()
     
     this->ownHouse.showFullInformation();
     cout << "]" << endl;
-}
-
-void Member::displayRequest()
-{
-    cout << "Current requests: " << endl;
-    int i = 1;
-    // for(Request r: this->requests){
-    //     cout << i << ". ";
-    //     r.show_req();
-    //     i++;
-    // }
 }
 
 void Member::cleanRequests(){

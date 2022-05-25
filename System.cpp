@@ -255,7 +255,7 @@ void System::acceptRequest()
 
     Request temp = currentMember->getRequests()[requestChoice];
     temp.setStatus(1);
-    currentMember->getRequests().clear();
+    currentMember->cleanRequests();
     currentMember->addRequests(temp);
     for (auto & member : this->members)
     {
