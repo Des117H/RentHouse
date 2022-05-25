@@ -4,7 +4,7 @@ int main()
 {
     System system = System();
     system.signup();
-    system.members[0].displayInformation();
+    system.currentMember->displayInformation();
     system.listHouse();
     system.members[0].displayInformation();
 }

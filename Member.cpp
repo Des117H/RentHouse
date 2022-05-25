@@ -1,17 +1,16 @@
 #include "Member.h"
 
+#include <utility>
+
 Member::Member(string username,string password, string fullName, 
-        string phoneNumber, int creditPoints, string location, string description)
+        string phoneNumber, int creditPoints, string address, string city, string description)
 {
     this->creditPoints = creditPoints;
-    this->username = username;
-    this->fullName = fullName;
-    this->phoneNumber = phoneNumber;
-    this->password = password;
-    cout << "before house" << endl;
-    this->ownHouse.setLocation(location);
-    this->ownHouse.setDescription(description);
-    cout << "Done" << endl;
+    this->username = move(username);
+    this->fullName = move(fullName);
+    this->phoneNumber = move(phoneNumber);
+    this->password = move(password);
+    this->ownHouse = House(move(address), move(city), move(description));
 }
 
 void Member::displayInformation()
@@ -27,7 +26,8 @@ void Member::displayInformation()
     cout << "]" << endl;
 }
 
-void Member::displayRequest(){
+void Member::displayRequest()
+{
     cout << "Current requests: " << endl;
     int i = 1;
     // for(Request r: this->requests){
@@ -37,78 +37,94 @@ void Member::displayRequest(){
     // }
 }
 
-// void Member::reset_requests(){
-//     this->requests.clear();
-// }
-void Member::reduceCreditPoints(int points){
+void Member::cleanRequests(){
+    this->requests.clear();
+}
+void Member::reduceCreditPoints(int points)
+{
     this->creditPoints -= points;
 };
 
-void Member::addCreditPoints(int points){
+void Member::addCreditPoints(int points)
+{
     this->creditPoints += points;
 };
 
 //getter method
-int Member::getCreditPoints(){
+int Member::getCreditPoints()
+{
     return this->creditPoints;
 }
 
-string Member::getUserName(){
+string Member::getUserName()
+{
     return this->username;
 }
 
-string Member::getPassword(){
+string Member::getPassword()
+{
     return this->password;
 }
 
-string Member::getFullName(){
+string Member::getFullName()
+{
     return this->fullName;
 }
 
-string Member::getPhoneNumber(){
+string Member::getPhoneNumber()
+{
     return this->phoneNumber;
 }
 
-House Member::getOwnHouse(){
+House Member::getOwnHouse()
+{
     return this->ownHouse;
 }
 
-Member Member::getRenter(){
+Member Member::getRenter()
+{
     return *this->renter;
 };
 
-Member Member::getRentHouse(){
+Member Member::getRentHouse()
+{
     return *this->rentHouse;
 };
 
-// vector <Request>Member:: get_req_list(){
-//     return this->requests;
-// }
+vector<Request> Member:: getRequests(){
+    return this->requests;
+}
 
 //setter
-void Member::setCreditPoints(int creditPoints){
+void Member::setCreditPoints(int creditPoints)
+{
     this->creditPoints = creditPoints;
 }
 
-// void Member::set_request(Request req){
-//     this->requests.push_back(req);
-// }
+void Member::addRequests(Request request){
+    this->requests.push_back(request);
+}
 
-void Member::setRenter(Member *renter){
+void Member::setRenter(Member *renter)
+{
     this->renter = renter;
 };
 
-void Member::setRentHouse(Member *rentHouse){
+void Member::setRentHouse(Member *rentHouse)
+{
     this->rentHouse = rentHouse;
 };
 
-void Member::setHouseAvailable(bool available){
-    this->ownHouse.setAvailable(available);
-}
-
-
-void Member::setHouseConsumePoint(int consumePoint)
+void Member::listHouse(int consumePoint, string startDay)
 {
+    this->ownHouse.setAvailable(true);
     this->ownHouse.setConsumePoint(consumePoint);
-    cout << "after set hour cp" << endl;
+    this->ownHouse.setDayAvailable(startDay);
 }
+
+void Member::unListHouse()
+{
+    this->ownHouse.unList();
+}
+
+

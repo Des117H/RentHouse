@@ -1,6 +1,7 @@
 #ifndef MEMBER_H
 #define MEMBER_H
 #include "House.h"
+#include "Request.h"
 
 class Member {
     private:
@@ -12,11 +13,12 @@ class Member {
         House ownHouse;
         Member *renter;
         Member *rentHouse;
+        vector<Request> requests;
     public:
         // Constructor
         Member(){};
         Member(string username,string password, string fullName, 
-        string phoneNumber, int creditPoints, string location, string description);
+        string phoneNumber, int creditPoints, string address, string city, string description);
 
         // General function
         void displayInformation();
@@ -25,6 +27,9 @@ class Member {
         void returnHouse(); 
         void reduceCreditPoints(int points);
         void addCreditPoints(int points);
+        void listHouse(int consumePoint, string startDay);
+        void unListHouse();
+        void cleanRequests();
 
         // Getter
         int getCreditPoints();
@@ -35,13 +40,13 @@ class Member {
         House getOwnHouse();
         Member getRenter();
         Member getRentHouse();
+        vector<Request> getRequests();
 
         // Setter
         void setCreditPoints(int creditPoints);
         void setRenter(Member *renter);
         void setRentHouse(Member *rentHouse);
-        void setHouseAvailable(bool available);
-        void setHouseConsumePoint(int consumePoint);
+        void addRequests(Request request);
 };
 
 #endif

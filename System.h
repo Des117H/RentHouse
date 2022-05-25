@@ -10,12 +10,18 @@ class System {
         System() {};
         void getData(string path);
         Member splitData(string data);
-        string getUserData(string type, bool isHouse);
+        string getUserData(const string& type, bool isHouse);
         bool login();
         bool signup();
-        void showHouseData();
+        void showHouseShort();
+        void showHouseFull();
         void listHouse();
+        void unListHouse();
         bool isLeapYear(int year);
+        void findHouse();
+        void sendRequest();
+        void viewRequest();
+        void acceptRequest();
 };
 
 #endif

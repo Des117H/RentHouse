@@ -1,16 +1,24 @@
-#include "Member.h"
+#include <utility>
 
-House::House(){
-    this->location = "";
+#include "Member.h"
+#include "House.h"
+
+
+House::House()
+{
+    this->address = "";
+    this->city = "";
     this->description = "";
     this->available = false;
     this->startDay = "";
     this->consumePoint = -1;
 }
 
-House::House(string location, string description){
-    this->location = location;
-    this->description = description;
+House::House(string address, string city, string description)
+{
+    this->address = move(address);
+    this->city = move(city);
+    this->description = move(description);
     this->available = false;
     this->startDay = "";
     this->consumePoint = -1;
@@ -18,23 +26,26 @@ House::House(string location, string description){
 
 House::House(const House& t)
 {
-    this->location = t.location;
+    this->address = t.address;
+    this->city = t.city;
     this->description = t.description;
     this->available = t.available;
     this->consumePoint = t.consumePoint;
     this->startDay = t.startDay;
 }
 // General functions
-void House::showFullInformation(){
+void House::showFullInformation()
+{
     string str = "[";
-    str += "Location: " + this->location + "\n";
+    str += "Address: " + this->address + "\n";
+    str += "City: " + this->city + "\n";
     str += "Description: " + this->description + "\n";
     str += "Available: ";
     if (this->available)
     {
         str += "yes\n";
         str += "Consuming points: " + to_string(this->consumePoint) + "\n";
-        str += "Start day:" + this->startDay + "\n";
+        str += "Start day:" + this->startDay;
     }
     else
         str += "no";
@@ -42,9 +53,11 @@ void House::showFullInformation(){
     cout << str << endl;
 }
 
-void House::showShortInformation(){
+void House::showShortInformation()
+{
     string str = "[\n";
-    str += "Location: " + this->location + "\n";
+    str += "Address: " + this->address + "\n";
+    str += "City: " + this->city + "\n";
     str += "Description: " + this->description + "\n";
     str += "]";
     cout << str << endl;
@@ -53,24 +66,40 @@ void House::showShortInformation(){
 void House::listHouse(int consumePoint, string startDay)
 {
     setAvailable(true);
-    setDayAvailable(startDay);
+    setDayAvailable(move(startDay));
     setConsumePoint(consumePoint);
 }
 
-// Getter
-string House::getLocation(){
-    return this->location;
+void House::unList()
+{
+    this->setAvailable(false);
+    this->setDayAvailable("");
+    this->setConsumePoint(-1);
 }
 
-string House::getDescription(){
+// Getter
+string House::getAddress()
+{
+    return this->address;
+}
+
+string House::getCity()
+{
+    return this->city;
+}
+
+string House::getDescription()
+{
     return this->description;
 }
 
-bool House::getAvailable(){
+bool House::getAvailable()
+{
     return this->available;
 }
 
-string House::getStartDay(){
+string House::getStartDay()
+{
     return this->startDay;
 }
 
@@ -85,14 +114,27 @@ void House::setDayAvailable(string startDay)
     this->startDay = startDay;
 }
 
-void House::setLocation(string location){
-    this->location = location;
+void House::setAddress(string address)
+{
+    this->address = address;
 }
 
-void House::setDescription(string description){
+void House::setCity(string city)
+{
+    this->city = city;
+}
+
+void House::setDescription(string description)
+{
     this->description = description;
 }
 
-void House::setAvailable(bool available){
+void House::setAvailable(bool available)
+{
     this->available = available;
+}
+
+int House::getConsumePoint()
+{
+    return this->consumePoint;
 }

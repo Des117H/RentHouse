@@ -1,21 +1,25 @@
 #include "System.h"
+
 bool System::login()
 {
     bool isValid = false;
-    do {
+    while (true)
+    {
         string username;
         string password;
         cout << "Enter username: ";
+        fflush(stdin);
         cin >> username;
-        for (Member member : members)
+        for (Member member: members)
             if (username.compare(member.getUserName()) == 0)
             {
                 cout << "Enter password: ";
+                fflush(stdin);
                 cin >> password;
-                if(password.compare(member.getPassword()) == 0)
+                if (password.compare(member.getPassword()) == 0)
                 {
                     cout << "Log in success." << endl;
-                    return true;    
+                    return true;
                 }
                 else
                 {
@@ -25,7 +29,7 @@ bool System::login()
                     return false;
                 }
             }
-    } while (true);
+    }
 }
 
 bool System::signup()
@@ -36,11 +40,12 @@ bool System::signup()
     while (true)
     {
         cout << "Enter username: ";
+        fflush(stdin);
         cin >> username;
-            
-        for (Member member : members)
+
+        for (Member member: members)
         {
-            if (username.compare(member.getUserName()) == 0)
+            if (username == member.getUserName())
             {
                 isValid = false;
                 break;
@@ -49,7 +54,7 @@ bool System::signup()
         if (isValid)
             break;
     }
-    
+
     Member member = Member();
 
     if (isValid)
@@ -57,53 +62,79 @@ bool System::signup()
         string password = getUserData("Password", false);
         string fullName = getUserData("Full Name", false);
         string phoneNumber = getUserData("Phone Number", false);
-        string location = getUserData("Location", true);
+        string address = getUserData("Address", true);
+        string city = getUserData("City", true);
         string description = getUserData("Description", true);
 
-        House house = House(location, description);
-        member = Member(username, password, fullName, phoneNumber, 500, location, description);
+        member = Member(username, password, fullName, phoneNumber, 500, address, city, description);
         members.push_back(member);
+        currentMember = &members.back();
     }
-    
+
     return isValid;
 }
 
-string System::getUserData(string type, bool isHouse)
+string System::getUserData(const string &type, bool isHouse)
 {
     string data;
     do
     {
         if (!isHouse)
-            cout << "Enter " + type + ": " ;
+            cout << "Enter " + type + ": ";
         else
-            cout << "Enter house " + type + ": " ;
+            cout << "Enter house's " + type + ": ";
 
-        cin >> data;
+        fflush(stdin);
+        getline(cin, data);
         if (data.empty())
         {
             cout << type << " cannot be empty." << endl;
             cout << "Please enter again." << endl;
         }
+        else if (type == "City")
+        {
+            if (!data.compare("Ho Chi Minh") || !data.compare("Da Nang") || !data.compare("Ha Noi"))
+                break;
+
+            cout << "We support no city but Ho Chi Minh, Ha Noi and Da Nang." << endl;
+            cout << "Please enter again." << endl;
+        }
         else
             break;
-    } while (true);
+    }
+    while (true);
 
     return data;
 }
 
-
-void System::showHouseData()
+void System::showHouseShort()
 {
-    if (members.size() == 0)
+    if (members.empty())
     {
         cout << "There is no house." << endl;
         return;
     }
-    for (Member member : members)
+    for (Member member: members)
     {
         member.getOwnHouse().showShortInformation();
     }
 }
+
+void System::showHouseFull()
+{
+    if (members.empty())
+    {
+        cout << "There is no house." << endl;
+        return;
+    }
+    int i = 1;
+    for (Member member: members)
+    {
+        cout << "House " << i << "th: " << endl;
+        member.getOwnHouse().showFullInformation();
+    }
+}
+
 void System::listHouse()
 {
     int day, month, year;
@@ -149,20 +180,92 @@ void System::listHouse()
     int consumePoint;
     cout << "Consume point: ";
     cin >> consumePoint;
+    currentMember->listHouse(consumePoint, startDay);
+}
 
-    cout << "Befor list" << endl;
-    currentMember->setHouseConsumePoint(consumePoint);
-    cout << "p" << endl;
-    currentMember->getOwnHouse().setAvailable(true);
-    cout << "a" << endl;
-    currentMember->getOwnHouse().setDayAvailable(startDay);
-    cout << "list house done!" << endl;
+void System::unListHouse()
+{
+    currentMember->unListHouse();
 }
 
 bool System::isLeapYear(int year)
 {
     if ((year % 400 == 0) || (year % 100 != 0 && year % 4 == 0))
         return true;
-    
+
     return false;
+}
+
+void System::findHouse()
+{
+    string currentUserName = currentMember->getUserName();
+    string city;
+
+    cout << "Enter city you want to stay: ";
+    fflush(stdin);
+    getline(cin, city);
+
+    for (Member member: members)
+        if (currentUserName.compare(member.getUserName()) != 0)
+            if (member.getOwnHouse().getCity().compare(city) == 0)
+                member.getOwnHouse().showShortInformation();
+}
+
+void System::sendRequest()
+{
+    showHouseFull();
+
+    if (this->members.empty())
+        return;
+
+    int houseChoice;
+    cout << "Enter the house's number: ";
+    cin >> houseChoice;
+
+    Request request = Request(currentMember->getUserName(), members[houseChoice - 1].getOwnHouse().getStartDay());
+    members[houseChoice - 1].addRequests(request);
+}
+
+void System::viewRequest()
+{
+    if (currentMember->getRequests().empty())
+    {
+        cout << "No requests currently available." << endl;
+        return;
+    }
+
+    int i = 0;
+    for (Request request: currentMember->getRequests())
+    {
+        cout << "Request " << i << "th: " << endl;
+        request.showRequest();
+    }
+}
+
+void System::acceptRequest()
+{
+    viewRequest();
+
+    if (currentMember->getRequests().empty())
+        return;
+
+    int requestChoice;
+    cout << "Enter the house's number: ";
+    cin >> requestChoice;
+
+    Request temp = currentMember->getRequests()[requestChoice];
+    temp.setStatus(1);
+    currentMember->getRequests().clear();
+    currentMember->addRequests(temp);
+    for (auto & member : this->members)
+    {
+        if (temp.getRenterName() == member.getUserName())
+        {
+            int points = currentMember->getOwnHouse().getConsumePoint();
+            currentMember->setRenter(&member);
+            currentMember->addCreditPoints(points);
+            member.setRentHouse(currentMember);
+            member.addCreditPoints(0 - points);
+        }
+    }
 }
