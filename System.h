@@ -2,19 +2,24 @@
 #define SYSTEM_H
 #include <fstream>
 #include "Member.h"
+#include "Admin.h"
 
 class System {
     public:
         vector<Member> members;
+        vector<Admin> admins;
         Member *currentMember;
         System() {};
         void getData(string path);
         Member splitData(string data);
         string getUserData(const string& type, bool isHouse);
         bool login();
+        bool adminLogin();
         bool signup();
+        void logout();
         void showHouseShort();
         void showHouseFull();
+        void displayUsersInformation();
         void listHouse();
         void unListHouse();
         bool isLeapYear(int year);
@@ -22,6 +27,11 @@ class System {
         void sendRequest();
         void viewRequest();
         void acceptRequest();
+        void mainPage();
+        void guestPage();
+        void memberPage();
+        void adminPage();
+        string getDay();
 };
 
 #endif

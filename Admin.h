@@ -12,7 +12,8 @@ class Admin
     public:
         Admin();
         Admin(string username, string password);
-        void showMembers();
+        string getUsername();
+        string getPassword();
 };
 
 #endif
