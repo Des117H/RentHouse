@@ -10,12 +10,12 @@ bool System::login()
         fflush(stdin);
         cin >> username;
         for (Member member: members)
-            if (username.compare(member.getUserName()) == 0)
+            if (username == member.getUserName())
             {
                 cout << "Enter password: ";
                 fflush(stdin);
                 cin >> password;
-                if (password.compare(member.getPassword()) == 0)
+                if (password == member.getPassword())
                 {
                     cout << "Log in success." << endl;
                     return true;
@@ -28,6 +28,7 @@ bool System::login()
                     return false;
                 }
             }
+        cout << "No user found." << endl;
     }
 }
 
@@ -277,7 +278,7 @@ void System::mainPage()
     while (true)
     {
         string choice;
-        cout << "Do you want to use as:\n" << "1. Guest\t2. Member\t3. Admin" << endl;
+        cout << "Do you want to use as:\n" << "1. Guest\t2. Member\t3. Admin\t4. Exit" << endl;
         cout << "Enter your choice: ";
         fflush(stdin);
         getline(cin, choice);
@@ -294,6 +295,9 @@ void System::mainPage()
                     break;
                 case 3:
                     this->adminPage();
+                    return;
+                case 4:
+                    this->saveData();
                     return;
                 default:
                     cout << "Invalid input!!!" << endl;
@@ -480,32 +484,41 @@ string System::getDay()
     return to_string(day) + "/" + to_string(month) + "/" + to_string(year);
 }
 
-//void System::saveData()
-//{
-//    for (Member member: members)
-//    {
-//        string str = member.getUserName() + ",";
-//        str +=  member.getFullName() + ",";
-//        str += to_string(member.getCreditPoints()) + ",";
-//        cout << "]" << endl;
-//
-//        str += member.getOwnHouse().getAddress() + ",";
-//        str += member.getOwnHouse().getCity() + ",";
-//        str += member.getOwnHouse().getDescription() + ",";
-//        if (member.getOwnHouse().getAvailable())
-//        {
-//            str += "1";
-//            str += to_string(member.getOwnHouse().getConsumePoint()) + ",";
-//            str += member.getOwnHouse().getStartDay();
-//            if (!member.getRequests().empty())
-//                for (Request request: member.getRequests())
-//
-//        }
-//        else
-//            str += "0";
-//
-//    }
-//
-//}
+void System::saveData()
+{
+    fstream fileout;
+    fileout.open("output.txt", ios::out);
+    if (!fileout)
+    {
+        cout << "Cannot open File";
+        return;
+    }
+
+    for (Member member: members)
+    {
+        string str = member.getUserName() + ",";
+        str += member.getFullName() + ",";
+        str += to_string(member.getCreditPoints()) + ",";
+        cout << "]" << endl;
+
+        str += member.getOwnHouse().getAddress() + ",";
+        str += member.getOwnHouse().getCity() + ",";
+        str += member.getOwnHouse().getDescription() + ",";
+        if (member.getOwnHouse().getAvailable())
+        {
+            str += "1";
+            str += to_string(member.getOwnHouse().getConsumePoint()) + ",";
+            str += member.getOwnHouse().getStartDay();
+            if (!member.getRequests().empty())
+                for (Request request: member.getRequests())
+                    str += request.to_string() + ",";
+        }
+        else
+            str += "0";
+
+        fileout << str << endl;
+    }
+
+}
 
 
