@@ -384,7 +384,7 @@ void System::memberPage()
         cout << "Your information: " << endl;
         this->currentMember->displayInformation();
 
-        cout << "Do you want to:\n" << "1. List/Unlist house\t2.View request\t3. Accept request\t4. Find House\t5. Send Request\t5.Log out" << endl;
+        cout << "Do you want to:\n" << "1. List/Unlist house\t2.View request\t3. Accept request\t4. Find House\t5. Send Request\t6.Log out" << endl;
         cout << "Enter your choice: ";
         fflush(stdin);
         getline(cin, choice);
