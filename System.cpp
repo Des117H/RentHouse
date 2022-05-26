@@ -79,6 +79,7 @@ bool System::signup()
             if (username == member.getUserName())
             {
                 isValid = false;
+                cout << "User name already exists!" << endl;
                 break;
             }
         }
@@ -100,6 +101,8 @@ bool System::signup()
         member = Member(username, password, fullName, phoneNumber, 500, address, city, description);
         members.push_back(member);
         currentMember = &members.back();
+
+        cout << "Sign up success!!!" << endl;
     }
 
     return isValid;
@@ -275,6 +278,7 @@ void System::logout()
 
 void System::mainPage()
 {
+    cout << "_______________________Main_______________________" << endl;
     while (true)
     {
         string choice;
@@ -313,6 +317,7 @@ void System::mainPage()
 
 void System::guestPage()
 {
+    cout << "_______________________Guest_______________________" << endl;
     while (true)
     {
         string choice;
@@ -331,7 +336,7 @@ void System::guestPage()
                 case 2:
                     this->signup();
                     this->memberPage();
-                    break;
+                    return;
                 case 3:
                     return;
                 default:
@@ -353,6 +358,8 @@ void System::memberPage()
     if (!this->login())
         return;
 
+
+    cout << "_______________________Member_______________________" << endl;
     while (true)
     {
         string choice;
@@ -368,7 +375,7 @@ void System::memberPage()
             switch (stoi(choice))
             {
                 case 1:
-                    this->currentMember->displayInformation();
+                    this->currentMember->displayRequest();
                     break;
                 case 2:
                     this->acceptRequest();
@@ -394,6 +401,8 @@ void System::adminPage()
     if (!this->adminLogin())
         return;
 
+
+    cout << "_______________________Admin_______________________" << endl;
     while (true)
     {
         string choice;
