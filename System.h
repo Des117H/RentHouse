@@ -35,4 +35,6 @@ class System {
         void saveData();
 };
 
+bool isNumber(const string& str);
+
 #endif

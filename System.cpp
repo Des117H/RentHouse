@@ -10,14 +10,16 @@ bool System::login()
         cout << "Enter username: ";
         fflush(stdin);
         cin >> username;
-        for (Member member: members)
-            if (username == member.getUserName())
+        Member *memberPointer = members.data();
+        for (int i = 0; i < members.size(); i++, memberPointer++)
+            if (username == memberPointer->getUserName())
             {
                 cout << "Enter password: ";
                 fflush(stdin);
                 cin >> password;
-                if (password == member.getPassword())
+                if (password == memberPointer->getPassword())
                 {
+                    currentMember = memberPointer;
                     cout << "Log in success." << endl;
                     return true;
                 }
@@ -136,6 +138,11 @@ string System::getUserData(const string &type, bool isHouse)
             cout << "We support no city but Ho Chi Minh, Ha Noi and Da Nang." << endl;
             cout << "Please enter again." << endl;
         }
+        else if (type == "Phone Number")
+        {
+            if (!isNumber(data))
+                cout << "Only input number" << endl;
+        }
         else
             break;
     }
@@ -240,8 +247,9 @@ void System::sendRequest()
     cout << "Enter the house's number: ";
     cin >> houseChoice;
 
-    Request request = Request(currentMember->getUserName(), members[houseChoice - 1].getOwnHouse().getStartDay());
-    members[houseChoice - 1].addRequests(request);
+    Request request = Request(currentMember->getUserName(), members[houseChoice].getOwnHouse().getStartDay());
+    members[houseChoice].addRequests(request);
+    cout << "Send request success!" << endl;
 }
 
 void System::viewRequest()
@@ -268,14 +276,23 @@ void System::acceptRequest()
     if (currentMember->getRequests().empty())
         return;
 
-    int requestChoice;
-    cout << "Enter the house's number: ";
-    cin >> requestChoice;
+    string requestChoice;
 
-    Request temp = currentMember->getRequests()[requestChoice];
+    while (true)
+    {
+        cout << "Enter the house's number: ";
+        cin >> requestChoice;
+        if (!isNumber(requestChoice))
+            cout << "Enter number only" << endl;
+        else
+            break;
+    }
+
+    Request temp = currentMember->getRequests()[stoi(requestChoice)];
     temp.setStatus(1);
     currentMember->cleanRequests();
     currentMember->addRequests(temp);
+    currentMember->unListHouse();
     for (auto &member: this->members)
     {
         if (temp.getRenterName() == member.getUserName())
@@ -305,7 +322,7 @@ void System::mainPage()
         fflush(stdin);
         getline(cin, choice);
 
-        try
+        if (isNumber(choice))
         {
             switch (stoi(choice))
             {
@@ -326,10 +343,8 @@ void System::mainPage()
                     break;
             }
         }
-        catch (...)
-        {
+        else
             cout << "Invalid input!!!" << endl;
-        }
     }
 }
 
@@ -344,7 +359,8 @@ void System::guestPage()
         fflush(stdin);
         getline(cin, choice);
 
-        try
+
+        if (isNumber(choice))
         {
             switch (stoi(choice))
             {
@@ -362,12 +378,8 @@ void System::guestPage()
                     break;
             }
         }
-        catch (...)
-        {
+        else
             cout << "Invalid input!!!" << endl;
-        }
-
-
     }
 }
 
@@ -389,7 +401,7 @@ void System::memberPage()
         fflush(stdin);
         getline(cin, choice);
 
-        try
+        if (isNumber(choice))
         {
             switch (stoi(choice))
             {
@@ -418,16 +430,15 @@ void System::memberPage()
                     this->sendRequest();
                     break;
                 case 6:
+                    this->logout();
                     return;
                 default:
                     cout << "Invalid input!!!" << endl;
                     break;
             }
         }
-        catch (...)
-        {
+        else
             cout << "Invalid input!!!" << endl;
-        }
     }
 
 
@@ -449,7 +460,7 @@ void System::adminPage()
         fflush(stdin);
         getline(cin, choice);
 
-        try
+        if (isNumber(choice))
         {
             switch (stoi(choice))
             {
@@ -463,10 +474,8 @@ void System::adminPage()
                     break;
             }
         }
-        catch (...)
-        {
+        else
             cout << "Invalid input!!!" << endl;
-        }
     }
 }
 
@@ -567,4 +576,8 @@ void System::saveData()
 
 }
 
-
+// https://www.delftstack.com/howto/cpp/how-to-determine-if-a-string-is-number-cpp/#:~:text=Use%20std%3A%3Aisdigit%20Method%20to%20Determine%20if%20a%20String%20Is%20a%20Number,-The%20first%20version&text=Namely%2C%20pass%20a%20string%20as,none%20is%20found%20returns%20true.
+bool isNumber(const string& str)
+{
+    return str.find_first_not_of("0123456789") == string::npos;
+}
