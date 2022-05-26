@@ -2,6 +2,7 @@
 
 bool System::login()
 {
+    cout << "_______________________Login_______________________" << endl;
     while (true)
     {
         string username;
@@ -34,6 +35,7 @@ bool System::login()
 
 bool System::adminLogin()
 {
+    cout << "_______________________Admin login_______________________" << endl;
     while (true)
     {
         string username;
@@ -65,6 +67,7 @@ bool System::adminLogin()
 
 bool System::signup()
 {
+    cout << "_______________________Signup_______________________" << endl;
     bool isValid = true;
     string username;
 
@@ -169,6 +172,7 @@ void System::showHouseFull()
         member.getOwnHouse().showFullInformation();
     }
 }
+
 
 void System::listHouse()
 {
@@ -363,9 +367,10 @@ void System::memberPage()
     while (true)
     {
         string choice;
+        cout << "Your information: " << endl;
         this->currentMember->displayInformation();
 
-        cout << "Do you want to:\n" << "1. View request\t2. Accept request\t3. Log out" << endl;
+        cout << "Do you want to:\n" << "1. List/Unlist house\t2.View request\t3. Accept request\t4. Log out" << endl;
         cout << "Enter your choice: ";
         fflush(stdin);
         getline(cin, choice);
@@ -375,12 +380,24 @@ void System::memberPage()
             switch (stoi(choice))
             {
                 case 1:
-                    this->currentMember->displayRequest();
+                    if (this->currentMember->getOwnHouse().getAvailable())
+                    {
+                        string list;
+                        cout << "Do you want to unlisted your house? (Yes/No)" << endl;
+                        getline(cin, list);
+                        if (list == "Yes")
+                            this->unListHouse();
+                    }
+                    else
+                        this->listHouse();
                     break;
                 case 2:
-                    this->acceptRequest();
+                    this->currentMember->displayRequest();
                     break;
                 case 3:
+                    this->acceptRequest();
+                    break;
+                case 4:
                     return;
                 default:
                     cout << "Invalid input!!!" << endl;
