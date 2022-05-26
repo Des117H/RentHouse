@@ -161,6 +161,7 @@ void System::showHouseFull()
     for (Member member: members)
     {
         cout << "House " << i << "th: " << endl;
+        i++;
         member.getOwnHouse().showFullInformation();
     }
 }
@@ -233,6 +234,7 @@ void System::viewRequest()
     for (Request request: currentMember->getRequests())
     {
         cout << "Request " << i << "th: " << endl;
+        i++;
         request.showRequest();
     }
 }
@@ -365,7 +367,7 @@ void System::memberPage()
                     this->currentMember->displayInformation();
                     break;
                 case 2:
-                    this->currentMember->acceptRequest();
+                    this->acceptRequest();
                     break;
                 case 3:
                     return;
@@ -477,5 +479,33 @@ string System::getDay()
 
     return to_string(day) + "/" + to_string(month) + "/" + to_string(year);
 }
+
+//void System::saveData()
+//{
+//    for (Member member: members)
+//    {
+//        string str = member.getUserName() + ",";
+//        str +=  member.getFullName() + ",";
+//        str += to_string(member.getCreditPoints()) + ",";
+//        cout << "]" << endl;
+//
+//        str += member.getOwnHouse().getAddress() + ",";
+//        str += member.getOwnHouse().getCity() + ",";
+//        str += member.getOwnHouse().getDescription() + ",";
+//        if (member.getOwnHouse().getAvailable())
+//        {
+//            str += "1";
+//            str += to_string(member.getOwnHouse().getConsumePoint()) + ",";
+//            str += member.getOwnHouse().getStartDay();
+//            if (!member.getRequests().empty())
+//                for (Request request: member.getRequests())
+//
+//        }
+//        else
+//            str += "0";
+//
+//    }
+//
+//}
 
 

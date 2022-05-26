@@ -50,3 +50,17 @@ void Request::showRequest()
 
     cout << str << endl;
 }
+
+string Request::to_string()
+{
+    string str = this->startDay + ", ";
+    str += this->renterName + ", ";
+    if (this->status < 0)
+        str += "-1";
+    else if (this->status > 0)
+        str += "1" ;
+    else
+        str += "0";
+
+    return str;
+}

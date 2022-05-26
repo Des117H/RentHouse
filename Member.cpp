@@ -114,4 +114,20 @@ void Member::unListHouse()
     this->ownHouse.unList();
 }
 
+void Member::displayRequest()
+{
+    if (this->requests.empty())
+    {
+        cout << "There are no requests." << endl;
+        return;
+    }
+    int index = 0;
+    for (Request request : this->requests)
+    {
+        cout << "Request " << index << "th: " << endl;
+        index++;
+        request.showRequest();
+    }
+}
+
 

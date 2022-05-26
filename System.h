@@ -32,6 +32,7 @@ class System {
         void memberPage();
         void adminPage();
         string getDay();
+        void saveData();
 };
 
 #endif

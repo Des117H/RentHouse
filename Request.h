@@ -22,6 +22,7 @@ class Request{
     void setStatus(int status);
     
     void showRequest();
+    string to_string();
 };
 
 #endif

@@ -23,7 +23,6 @@ class Member {
         // General function
         void displayInformation();
         void displayRequest();
-        void acceptRequest();
         void returnHouse(); 
         void reduceCreditPoints(int points);
         void addCreditPoints(int points);
