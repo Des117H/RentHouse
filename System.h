@@ -9,7 +9,7 @@ class System {
         vector<Member> members;
         vector<Admin> admins;
         Member *currentMember;
-        System() {};
+        System();
         void getData(string path);
         Member splitData(string data);
         string getUserData(const string& type, bool isHouse);
@@ -22,6 +22,7 @@ class System {
         void displayUsersInformation();
         void listHouse();
         void unListHouse();
+        void houseList();
         bool isLeapYear(int year);
         bool findHouse();
         void sendRequest();

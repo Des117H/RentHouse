@@ -3,6 +3,13 @@
 bool System::login()
 {
     cout << "_______________________Login_______________________" << endl;
+
+    if (members.empty())
+    {
+        cout << "There is no member's data" << endl;
+        return false;
+    }
+
     while (true)
     {
         string username;
@@ -70,11 +77,12 @@ bool System::adminLogin()
 bool System::signup()
 {
     cout << "_______________________Signup_______________________" << endl;
-    bool isValid = true;
+    bool isValid;
     string username;
 
     while (true)
     {
+        isValid = true;
         cout << "Enter username: ";
         fflush(stdin);
         cin >> username;
@@ -142,6 +150,8 @@ string System::getUserData(const string &type, bool isHouse)
         {
             if (!isNumber(data))
                 cout << "Only input number" << endl;
+            else
+                break;
         }
         else
             break;
@@ -180,7 +190,6 @@ void System::showHouseFull()
     }
 }
 
-
 void System::listHouse()
 {
     string startDay = getDay();
@@ -193,6 +202,20 @@ void System::listHouse()
 void System::unListHouse()
 {
     currentMember->unListHouse();
+}
+
+void System::houseList()
+{
+    if (this->currentMember->getOwnHouse().getAvailable())
+    {
+        string list;
+        cout << "Do you want to unlisted your house? (Yes/No)" << endl;
+        getline(cin, list);
+        if (list == "Yes")
+            this->unListHouse();
+    }
+    else
+        this->listHouse();
 }
 
 bool System::isLeapYear(int year)
@@ -308,14 +331,14 @@ void System::acceptRequest()
 
 void System::logout()
 {
-    this->currentMember == nullptr;
+    this->currentMember = nullptr;
 }
 
 void System::mainPage()
 {
-    cout << "_______________________Main_______________________" << endl;
     while (true)
     {
+        cout << "_______________________Main_______________________" << endl;
         string choice;
         cout << "Do you want to use as:\n" << "1. Guest\t2. Member\t3. Admin\t4. Exit" << endl;
         cout << "Enter your choice: ";
@@ -350,9 +373,9 @@ void System::mainPage()
 
 void System::guestPage()
 {
-    cout << "_______________________Guest_______________________" << endl;
     while (true)
     {
+        cout << "_______________________Guest_______________________" << endl;
         string choice;
         cout << "Do you want to:\n" << "1. View houses\t2. Sign up\t3. Exit" << endl;
         cout << "Enter your choice: ";
@@ -372,6 +395,7 @@ void System::guestPage()
                     this->memberPage();
                     return;
                 case 3:
+                    this->logout();
                     return;
                 default:
                     cout << "Invalid input!!!" << endl;
@@ -385,18 +409,20 @@ void System::guestPage()
 
 void System::memberPage()
 {
-    if (!this->login())
-        return;
+    if (currentMember == nullptr)
+        if (!this->login())
+            return;
 
-
-    cout << "_______________________Member_______________________" << endl;
     while (true)
     {
+        cout << "_______________________Member_______________________" << endl;
         string choice;
         cout << "Your information: " << endl;
         this->currentMember->displayInformation();
 
-        cout << "Do you want to:\n" << "1. List/Unlist house\t2.View request\t3. Accept request\t4. Find House\t5. Send Request\t6.Log out" << endl;
+        cout << "Do you want to:" << endl;
+        cout << "1. List/Unlist house\t2. View request\t3. Accept request" << endl;
+        cout << "4. Find House       \t5. Send Request\t6. Log out" << endl;
         cout << "Enter your choice: ";
         fflush(stdin);
         getline(cin, choice);
@@ -406,16 +432,7 @@ void System::memberPage()
             switch (stoi(choice))
             {
                 case 1:
-                    if (this->currentMember->getOwnHouse().getAvailable())
-                    {
-                        string list;
-                        cout << "Do you want to unlisted your house? (Yes/No)" << endl;
-                        getline(cin, list);
-                        if (list == "Yes")
-                            this->unListHouse();
-                    }
-                    else
-                        this->listHouse();
+                    this->houseList();
                     break;
                 case 2:
                     this->currentMember->displayRequest();
@@ -440,8 +457,6 @@ void System::memberPage()
         else
             cout << "Invalid input!!!" << endl;
     }
-
-
 }
 
 void System::adminPage()
@@ -449,10 +464,9 @@ void System::adminPage()
     if (!this->adminLogin())
         return;
 
-
-    cout << "_______________________Admin_______________________" << endl;
     while (true)
     {
+        cout << "_______________________Admin_______________________" << endl;
         string choice;
 
         cout << "Do you want to:\n" << "1. View users\t2. Log out" << endl;
@@ -552,21 +566,25 @@ void System::saveData()
     for (Member member: members)
     {
         string str = member.getUserName() + ",";
+        str += member.getPassword() + ",";
         str += member.getFullName() + ",";
+        str += member.getPhoneNumber() + ",";
         str += to_string(member.getCreditPoints()) + ",";
-        cout << "]" << endl;
 
         str += member.getOwnHouse().getAddress() + ",";
         str += member.getOwnHouse().getCity() + ",";
         str += member.getOwnHouse().getDescription() + ",";
+
         if (member.getOwnHouse().getAvailable())
         {
-            str += "1";
+            str += "1,";
             str += to_string(member.getOwnHouse().getConsumePoint()) + ",";
             str += member.getOwnHouse().getStartDay();
             if (!member.getRequests().empty())
+            {
                 for (Request request: member.getRequests())
-                    str += request.to_string() + ",";
+                    str += "," + request.to_string();
+            }
         }
         else
             str += "0";
@@ -574,6 +592,74 @@ void System::saveData()
         fileout << str << endl;
     }
 
+}
+
+System::System()
+{
+    currentMember = nullptr;
+}
+
+void System::getData(string path)
+{
+    fstream filein;
+    filein.open(path, ios::in);
+
+    if(!filein)
+    {
+        cout << "Cannot open file!";
+        return;
+    }
+
+    string data;
+    while (!filein.eof())
+    {
+        getline(filein, data);
+        if (data.length() == 0)
+            break;
+
+        this->members.push_back(splitData(data));
+    }
+
+    filein.close();
+}
+
+Member System::splitData(string data)
+{
+    stringstream strStream(data);
+    vector<string> splitedData;
+    string dataPiece;
+
+    while(std::getline(strStream, dataPiece, ','))
+        splitedData.push_back(dataPiece);
+
+    Member tempMember = Member(splitedData[0], splitedData[1],
+                               splitedData[2],splitedData[3],
+                               stoi(splitedData[4]), splitedData[5],
+                               splitedData[6], splitedData[7]);
+    if (splitedData[8] == "0")
+        return tempMember;
+
+    tempMember.getOwnHouse().setAvailable(true);
+    tempMember.getOwnHouse().setConsumePoint(stoi(splitedData[9]));
+    tempMember.getOwnHouse().setDayAvailable(splitedData[10]);
+    int size = splitedData.size();
+    if  (size == 11)
+        return tempMember;
+
+    int index = 11;
+    while (index < size)
+    {
+        Request request = Request(splitedData[index], splitedData[index + 1]);
+        if (splitedData[index + 2] == "1")
+        {
+            request.setStatus(1);
+            tempMember.addRequests(request);
+            return tempMember;
+        }
+        else
+            tempMember.addRequests(request);
+        index += 2;
+    }
 }
 
 // https://www.delftstack.com/howto/cpp/how-to-determine-if-a-string-is-number-cpp/#:~:text=Use%20std%3A%3Aisdigit%20Method%20to%20Determine%20if%20a%20String%20Is%20a%20Number,-The%20first%20version&text=Namely%2C%20pass%20a%20string%20as,none%20is%20found%20returns%20true.
