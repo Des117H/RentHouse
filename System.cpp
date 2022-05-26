@@ -201,7 +201,7 @@ bool System::findHouse()
     if (this->members.empty())
     {
         cout << "There is no house." << endl;
-        return;
+        return false;
     }
     string currentUserName = currentMember->getUserName();
     string city;
@@ -226,10 +226,9 @@ bool System::findHouse()
                         found = true;
                     }
     if (index == 0)
-    {
         cout << "There is no house suitable for you." << endl;
-        return found;
-    }
+
+    return found;
 }
 
 void System::sendRequest()
