@@ -23,7 +23,7 @@ class System {
         void listHouse();
         void unListHouse();
         bool isLeapYear(int year);
-        void findHouse();
+        bool findHouse();
         void sendRequest();
         void viewRequest();
         void acceptRequest();

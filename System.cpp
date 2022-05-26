@@ -196,8 +196,13 @@ bool System::isLeapYear(int year)
     return false;
 }
 
-void System::findHouse()
+bool System::findHouse()
 {
+    if (this->members.empty())
+    {
+        cout << "There is no house." << endl;
+        return;
+    }
     string currentUserName = currentMember->getUserName();
     string city;
 
@@ -207,19 +212,29 @@ void System::findHouse()
 
     string dayStay = getDay();
 
+    int index = 0;
+    bool found = false;
     for (Member member: members)
         if (currentUserName != member.getUserName())
             if (member.getOwnHouse().getCity() == city)
                 if (member.getOwnHouse().getStartDay() == dayStay)
                     if (member.getOwnHouse().getConsumePoint() <= currentMember->getCreditPoints())
+                    {
+                        cout << "House " << index << "th: " << endl;
+                        index++;
                         member.getOwnHouse().showShortInformation();
+                        found = true;
+                    }
+    if (index == 0)
+    {
+        cout << "There is no house suitable for you." << endl;
+        return found;
+    }
 }
 
 void System::sendRequest()
 {
-    showHouseFull();
-
-    if (this->members.empty())
+    if(!findHouse())
         return;
 
     int houseChoice;
@@ -370,7 +385,7 @@ void System::memberPage()
         cout << "Your information: " << endl;
         this->currentMember->displayInformation();
 
-        cout << "Do you want to:\n" << "1. List/Unlist house\t2.View request\t3. Accept request\t4. Log out" << endl;
+        cout << "Do you want to:\n" << "1. List/Unlist house\t2.View request\t3. Accept request\t4. Find House\t5. Send Request\t5.Log out" << endl;
         cout << "Enter your choice: ";
         fflush(stdin);
         getline(cin, choice);
@@ -398,6 +413,12 @@ void System::memberPage()
                     this->acceptRequest();
                     break;
                 case 4:
+                    this->findHouse();
+                    break;
+                case 5:
+                    this->sendRequest();
+                    break;
+                case 6:
                     return;
                 default:
                     cout << "Invalid input!!!" << endl;
