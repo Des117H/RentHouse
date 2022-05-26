@@ -53,8 +53,8 @@ void Request::showRequest()
 
 string Request::to_string()
 {
-    string str = this->startDay + ", ";
-    str += this->renterName + ", ";
+    string str = this->startDay + ",";
+    str += this->renterName + ",";
     if (this->status < 0)
         str += "-1";
     else if (this->status > 0)

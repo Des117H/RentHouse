@@ -9,6 +9,8 @@ Member::Member(string username,string password, string fullName,
     this->phoneNumber = move(phoneNumber);
     this->password = move(password);
     this->ownHouse = House(move(address), move(city), move(description));
+    this->renter = nullptr;
+    this->rentHouse = nullptr;
 }
 
 void Member::displayInformation()
@@ -27,10 +29,6 @@ void Member::displayInformation()
 void Member::cleanRequests(){
     this->requests.clear();
 }
-void Member::reduceCreditPoints(int points)
-{
-    this->creditPoints -= points;
-};
 
 void Member::addCreditPoints(int points)
 {
@@ -68,14 +66,14 @@ House Member::getOwnHouse()
     return this->ownHouse;
 }
 
-Member Member::getRenter()
+Member* Member::getRenter()
 {
-    return *this->renter;
+    return this->renter;
 };
 
-Member Member::getRentHouse()
+Member* Member::getRentHouse()
 {
-    return *this->rentHouse;
+    return this->rentHouse;
 };
 
 vector<Request> Member:: getRequests(){
@@ -128,6 +126,12 @@ void Member::displayRequest()
         index++;
         request.showRequest();
     }
+}
+
+void Member::returnHouse()
+{
+    this->rentHouse->setRenter(nullptr);
+    this->rentHouse = nullptr;
 }
 
 

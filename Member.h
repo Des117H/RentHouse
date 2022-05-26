@@ -23,8 +23,7 @@ class Member {
         // General function
         void displayInformation();
         void displayRequest();
-        void returnHouse(); 
-        void reduceCreditPoints(int points);
+        void returnHouse();
         void addCreditPoints(int points);
         void listHouse(int consumePoint, string startDay);
         void unListHouse();
@@ -37,8 +36,8 @@ class Member {
         string getFullName();
         string getPhoneNumber();
         House getOwnHouse();
-        Member getRenter();
-        Member getRentHouse();
+        Member* getRenter();
+        Member* getRentHouse();
         vector<Request> getRequests();
 
         // Setter

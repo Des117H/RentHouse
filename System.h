@@ -9,7 +9,8 @@ class System {
         vector<Member> members;
         vector<Admin> admins;
         Member *currentMember;
-        System();
+        System(string path);
+        void initialize(string path);
         void getData(string path);
         Member splitData(string data);
         string getUserData(const string& type, bool isHouse);

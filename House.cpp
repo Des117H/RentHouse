@@ -17,8 +17,8 @@ House::House(string address, string city, string description)
     this->city = move(city);
     this->description = move(description);
     this->available = false;
-    this->startDay = "";
-    this->consumePoint = -1;
+//    this->startDay = "";
+//    this->consumePoint = -1;
 }
 
 House::House(const House& t)
@@ -70,8 +70,6 @@ void House::listHouse(int consumePoint, string startDay)
 void House::unList()
 {
     this->setAvailable(false);
-    this->setDayAvailable("");
-    this->setConsumePoint(-1);
 }
 
 // Getter

@@ -303,7 +303,7 @@ void System::acceptRequest()
 
     while (true)
     {
-        cout << "Enter the house's number: ";
+        cout << "Enter request's number: ";
         cin >> requestChoice;
         if (!isNumber(requestChoice))
             cout << "Enter number only" << endl;
@@ -421,37 +421,83 @@ void System::memberPage()
         this->currentMember->displayInformation();
 
         cout << "Do you want to:" << endl;
-        cout << "1. List/Unlist house\t2. View request\t3. Accept request" << endl;
-        cout << "4. Find House       \t5. Send Request\t6. Log out" << endl;
+        if (this->currentMember->getRentHouse() != nullptr)
+        {
+            cout << "1. List/Unlist house\t2. View request\t3. Accept request" << endl;
+            cout << "4. Find House       \t5. Send Request\t6. Return House" << endl;
+            cout << "7.Log out" << endl;
+        }
+        else
+        {
+            cout << "1. List/Unlist house\t2. View request\t3. Accept request" << endl;
+            cout << "4. Find House       \t5. Send Request\t6. Log out" << endl;
+        }
         cout << "Enter your choice: ";
         fflush(stdin);
         getline(cin, choice);
 
-        if (isNumber(choice))
+        if (choice == "")
         {
-            switch (stoi(choice))
+            cout << "Invalid input!!!" << endl;
+        }
+        else if (isNumber(choice))
+        {
+            if (this->currentMember->getRentHouse() != nullptr)
             {
-                case 1:
-                    this->houseList();
-                    break;
-                case 2:
-                    this->currentMember->displayRequest();
-                    break;
-                case 3:
-                    this->acceptRequest();
-                    break;
-                case 4:
-                    this->findHouse();
-                    break;
-                case 5:
-                    this->sendRequest();
-                    break;
-                case 6:
-                    this->logout();
-                    return;
-                default:
-                    cout << "Invalid input!!!" << endl;
-                    break;
+                switch (stoi(choice))
+                {
+                    case 1:
+                        this->houseList();
+                        break;
+                    case 2:
+                        this->currentMember->displayRequest();
+                        break;
+                    case 3:
+                        this->acceptRequest();
+                        break;
+                    case 4:
+                        this->findHouse();
+                        break;
+                    case 5:
+                        this->sendRequest();
+                        break;
+                    case 6:
+                        this->currentMember->returnHouse();
+                        break;
+                    case 7:
+                        this->logout();
+                        return;
+                    default:
+                        cout << "Invalid input!!!" << endl;
+                        break;
+                }
+            }
+            else
+            {
+                switch (stoi(choice))
+                {
+                    case 1:
+                        this->houseList();
+                        break;
+                    case 2:
+                        this->currentMember->displayRequest();
+                        break;
+                    case 3:
+                        this->acceptRequest();
+                        break;
+                    case 4:
+                        this->findHouse();
+                        break;
+                    case 5:
+                        this->sendRequest();
+                        break;
+                    case 6:
+                        this->logout();
+                        return;
+                    default:
+                        cout << "Invalid input!!!" << endl;
+                        break;
+                }
             }
         }
         else
@@ -586,6 +632,18 @@ void System::saveData()
                     str += "," + request.to_string();
             }
         }
+        else if (!member.getRequests().empty())
+        {
+           if (member.getRenter() == nullptr)
+               str+= "0";
+           else
+           {
+               str += "0,";
+               str += to_string(member.getOwnHouse().getConsumePoint()) + ",";
+               str += member.getOwnHouse().getStartDay();
+               str += "," + member.getRequests()[0].to_string();
+           }
+        }
         else
             str += "0";
 
@@ -594,9 +652,10 @@ void System::saveData()
 
 }
 
-System::System()
+System::System(string path)
 {
     currentMember = nullptr;
+    initialize(path);
 }
 
 void System::getData(string path)
@@ -632,24 +691,36 @@ Member System::splitData(string data)
     while(std::getline(strStream, dataPiece, ','))
         splitedData.push_back(dataPiece);
 
+    int size = splitedData.size();
     Member tempMember = Member(splitedData[0], splitedData[1],
                                splitedData[2],splitedData[3],
                                stoi(splitedData[4]), splitedData[5],
                                splitedData[6], splitedData[7]);
-    if (splitedData[8] == "0")
-        return tempMember;
 
-    tempMember.getOwnHouse().setAvailable(true);
-    tempMember.getOwnHouse().setConsumePoint(stoi(splitedData[9]));
-    tempMember.getOwnHouse().setDayAvailable(splitedData[10]);
-    int size = splitedData.size();
+    if (splitedData[8] == "0")
+    {
+        if (size == 9)
+            return tempMember;
+        else
+        {
+            Request request = Request(splitedData[12], splitedData[11]);
+            request.setStatus(1);
+            tempMember.addRequests(request);
+            tempMember.listHouse(stoi(splitedData[9]),splitedData[10]);
+            tempMember.unListHouse();
+            return tempMember;
+        }
+    }
+    else
+        tempMember.listHouse(stoi(splitedData[9]),splitedData[10]);
+
     if  (size == 11)
         return tempMember;
 
     int index = 11;
     while (index < size)
     {
-        Request request = Request(splitedData[index], splitedData[index + 1]);
+        Request request = Request(splitedData[index + 1], splitedData[index]);
         if (splitedData[index + 2] == "1")
         {
             request.setStatus(1);
@@ -658,7 +729,42 @@ Member System::splitData(string data)
         }
         else
             tempMember.addRequests(request);
-        index += 2;
+
+        index += 3;
+    }
+
+    return tempMember;
+}
+
+void System::initialize(string path)
+{
+    getData(path);
+    if (members.empty())
+        return;
+    
+    Member *memberPointer1 = members.data();
+    Member *memberPointer2 = members.data();
+    int size = members.size();
+    for (int i = 0; i < size; i++, memberPointer1++)
+    {
+        if (!memberPointer1->getOwnHouse().getAvailable() && !memberPointer1->getRequests().empty())
+        {
+            bool found = false;
+            for (int j = 0; j < size; j++, memberPointer2++)
+            {
+                if (memberPointer2->getUserName() == memberPointer1->getUserName())
+                    continue;
+                if (memberPointer2->getUserName() == memberPointer1->getRequests()[0].getRenterName())
+                {
+                    found = true;
+                    memberPointer1->setRenter(memberPointer2);
+                    memberPointer2->setRentHouse(memberPointer1);
+                }
+            }
+            
+            if (!found)
+                memberPointer1->cleanRequests();
+        }
     }
 }
 
