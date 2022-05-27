@@ -21,15 +21,6 @@ House::House(string address, string city, string description)
 //    this->consumePoint = -1;
 }
 
-House::House(const House& t)
-{
-    this->address = t.address;
-    this->city = t.city;
-    this->description = t.description;
-    this->available = t.available;
-    this->consumePoint = t.consumePoint;
-    this->startDay = t.startDay;
-}
 // General functions
 void House::showFullInformation()
 {

@@ -17,7 +17,6 @@ class House {
         // Constructor
         House();
         House(string address, string city, string description);
-        House(const House& t);
 
         // General functions
         void showFullInformation();
