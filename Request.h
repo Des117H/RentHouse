@@ -4,7 +4,7 @@
 using namespace std;
 class Request{
     //status -1: reject, 0: Pending, 1:Accepted
-    int status{};
+    int status;
     string renterName;
     string startDay;
     public:
