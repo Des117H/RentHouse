@@ -35,6 +35,7 @@ class System {
         void adminPage();
         string getDay();
         void saveData();
+        void getAdminData(string path);
 };
 
 bool isNumber(const string& str);

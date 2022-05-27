@@ -357,7 +357,7 @@ void System::mainPage()
                     break;
                 case 3:
                     this->adminPage();
-                    return;
+                    break;
                 case 4:
                     this->saveData();
                     return;
@@ -436,68 +436,53 @@ void System::memberPage()
         fflush(stdin);
         getline(cin, choice);
 
-        if (choice == "")
+        if (isNumber(choice))
         {
-            cout << "Invalid input!!!" << endl;
-        }
-        else if (isNumber(choice))
-        {
-            if (this->currentMember->getRentHouse() != nullptr)
+            switch (stoi(choice))
             {
-                switch (stoi(choice))
-                {
-                    case 1:
-                        this->houseList();
-                        break;
-                    case 2:
-                        this->currentMember->displayRequest();
-                        break;
-                    case 3:
-                        this->acceptRequest();
-                        break;
-                    case 4:
-                        this->findHouse();
-                        break;
-                    case 5:
-                        this->sendRequest();
-                        break;
-                    case 6:
+                case 1:
+                    this->houseList();
+                    break;
+                case 2:
+                    this->currentMember->displayRequest();
+                    cout << "Enter to continue." << endl;
+                    getline(cin, choice);
+                    break;
+                case 3:
+                    this->acceptRequest();
+                    break;
+                case 4:
+                    this->findHouse();
+                    break;
+                case 5:
+                    this->sendRequest();
+                    break;
+                case 6:
+                    if (this->currentMember->getRentHouse() != nullptr)
+                    {
                         this->currentMember->returnHouse();
                         break;
-                    case 7:
+                    }
+                    else
+                    {
                         this->logout();
                         return;
-                    default:
-                        cout << "Invalid input!!!" << endl;
-                        break;
-                }
-            }
-            else
-            {
-                switch (stoi(choice))
-                {
-                    case 1:
-                        this->houseList();
-                        break;
-                    case 2:
-                        this->currentMember->displayRequest();
-                        break;
-                    case 3:
-                        this->acceptRequest();
-                        break;
-                    case 4:
-                        this->findHouse();
-                        break;
-                    case 5:
-                        this->sendRequest();
-                        break;
-                    case 6:
+                    }
+                case 7:
+                    if (this->currentMember->getRentHouse() != nullptr)
+                    {
                         this->logout();
                         return;
-                    default:
+                    }
+                    else
+                    {
                         cout << "Invalid input!!!" << endl;
                         break;
-                }
+                    }
+                default:
+                    cout << "Invalid input!!!" << endl;
+                    break;
+
             }
         }
         else
@@ -552,6 +537,7 @@ void System::displayUsersInformation()
     {
         cout << "Member " << index << "th: " << endl;
         member.displayInformation();
+        index++;
         cout << "________________________________________" << endl;
     }
 }
@@ -739,6 +725,7 @@ Member System::splitData(string data)
 void System::initialize(string path)
 {
     getData(path);
+    getAdminData("./admin.txt");
     if (members.empty())
         return;
     
@@ -768,8 +755,43 @@ void System::initialize(string path)
     }
 }
 
+void System::getAdminData(string path)
+{
+    fstream filein;
+    filein.open(path, ios::in);
+
+    if(!filein)
+    {
+        cout << "Cannot open file!";
+        return;
+    }
+
+    string data;
+    while (!filein.eof())
+    {
+        getline(filein, data);
+        if (data.length() == 0)
+            break;
+
+        stringstream strStream(data);
+        vector<string> splitedData;
+        string dataPiece;
+
+        while(std::getline(strStream, dataPiece, ','))
+            splitedData.push_back(dataPiece);
+
+        Admin tempAdmin = Admin(splitedData[0], splitedData[1]);
+
+        this->admins.push_back(tempAdmin);
+    }
+
+    filein.close();
+}
+
 // https://www.delftstack.com/howto/cpp/how-to-determine-if-a-string-is-number-cpp/#:~:text=Use%20std%3A%3Aisdigit%20Method%20to%20Determine%20if%20a%20String%20Is%20a%20Number,-The%20first%20version&text=Namely%2C%20pass%20a%20string%20as,none%20is%20found%20returns%20true.
 bool isNumber(const string& str)
 {
+    if (str.empty())
+        return false;
     return str.find_first_not_of("0123456789") == string::npos;
 }
